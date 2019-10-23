@@ -1,0 +1,225 @@
+html
+{
+    width: 100vw;
+    height: 100vh;
+}
+
+body
+{
+    width: 100%;
+    height: 100%;
+}
+
+#storyboard
+{
+    width: 100%;
+}
+
+/* #storyboard
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} */
+
+.collection-card
+{
+    transition: all 0.3s;
+    height: auto;
+    width: calc((100vw * (3/5) - 24px) * (2/3) + 26px);
+    padding: 12px;
+    border: 1px solid black;
+    margin-bottom: 10%;
+}
+
+.collection-card:hover
+{
+    transition: all 0.3s;
+    box-shadow: -6px 6px black;
+    transform: rotateX(-10deg);
+    transform: rotateY(-10deg);
+}
+
+.create-story-form
+{
+    transition: all 0.3s;
+}
+
+.create-story-form:hover
+{
+    transition: all 0.3s;
+    box-shadow: -6px 6px black;
+    transform: rotateX(-10deg);
+    transform: rotateY(-10deg);
+}
+
+#collection-name-input
+{
+    transition: all 0.3s;
+}
+
+#collection-name-input:hover
+{
+    transition: all 0.3s;
+    box-shadow: -4px 4px black;
+    transform: rotateX(-10deg);
+    transform: rotateY(-10deg);
+}
+
+#collections-list
+{
+    transition: all 0.3s;
+}
+
+#collections-list:hover
+{
+    transition: all 0.3s;
+    box-shadow: -6px 6px black;
+    transform: rotateX(-10deg);
+    transform: rotateY(-10deg);
+}
+
+#collection-description-input
+{
+    transition: all 0.3s;
+}
+
+#collection-description-input:hover
+{
+    transition: all 0.3s;
+    box-shadow: -6px 6px black;
+    transform: rotateX(-10deg);
+    transform: rotateY(-10deg);
+}
+
+.collection-card-image-container
+{
+    width: calc((100vw * (3/5) - 24px) * (2/3));
+    height: calc(((100vw * (3/5) - 24px) * (9/16)) * (2/3));
+    border: 1px solid black;
+    background-color: white;
+}
+
+.collection-card-image
+{
+    height: 100%;
+    width: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    image-orientation: 0deg;
+}
+
+.divider
+{
+    margin-top: 16px;
+    margin-bottom: 16px;
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0))
+}
+
+.collection-card-body
+{
+    height: 100px;
+    border: 1px solid black;
+    background-color: white;
+}
+
+#storyboard-title
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 4%;
+    margin-bottom: 4%;
+    height: 30vh;
+    width: 100%; 
+    font-family: 'Fascinate Inline', cursive;
+    font-size: 60px;
+    text-decoration: underline;
+}
+
+.sidebar
+{
+    height: 100vh;
+}
+
+#main 
+{
+    transition: all 0.3s;
+    overflow: scroll;
+}
+
+#main:hover
+{
+    transition: all 0.3s;
+    box-shadow: -2px 0 10px rgba(50, 50, 50, 1), 2px 0 10px rgba(50, 50, 50, 1);
+}
+
+#doughnutChart
+{
+    transition: all 0.3s;
+}
+
+#doughnutChart:hover
+{
+    transition: all 0.3s;
+    box-shadow: -6px 6px black;
+}
+
+#left-panel
+{
+    transition: all 0.3s;
+    font-family: 'Quicksand';
+    font-weight: 400;  
+}
+
+#right-panel
+{
+    transition: all 0.3s;
+}
+
+#right-panel:hover
+{
+    transition: all 0.3s;
+    box-shadow: -2px 0 10px rgba(50, 50, 50, 1);
+}
+
+#collections-title
+{
+    font-weight: 700;
+}
+
+#left-panel:hover
+{
+    transition: all 0.3s;
+    box-shadow: 2px 0 10px rgba(50, 50, 50, 1);
+}
+
+#collections-title
+{
+    text-decoration: underline;
+}
+
+textarea
+{
+    resize: none;
+    padding: 10px;
+    overflow: scroll;
+}
+
+#collections-list
+{
+    height: 200px;
+    width: 100%;
+    overflow: scroll;
+    background-color: white;
+}
+
+#create-story-form
+{
+    height: auto;
+    width: calc((100vw * (3/5) - 24px) * (2/3) + 26px);
+}
+

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <!-- Meta -->
+
+        <title>Storyboard</title>
+
+        <!-- Styles -->
+
+        <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+        <link href="index.css" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Fascinate+Inline|Quicksand&display=swap" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet" type="text/css">
+
+        <!-- Scripts -->
+
+        <script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+        <script defer src="index.js"></script>
+
+    </head>
+
+    <body class="flex flex-row">
+
+        <!-- START TEMPLATE -->
+
+        <!-- Dynamic Content -->
+        <div id="left-panel" class="w-1/5 bg-indigo-200 flex flex-col py-8 px-6 items-between">
+
+            <div id="collections-title" class="mb-8 flex justify-center text-2xl">Collections</div>
+            <div id="collections-list" class="mb-8">
+
+                
+
+            </div>
+            <form id="collection-form">
+                <div class="flex flex-col mb-1"><label for="name" class="mb-1">Name</label><input id="collection-name-input" autocomplete="off" class="w-full" type="text" name="name"></div>
+                <div class="flex flex-col mb-6"><label for="description" class="mb-1">Description</label><textarea id="collection-description-input" class="w-full" type="textarea" name="description" rows="7"></textarea></div>
+                <div class="flex flex-col mb-4"><input value="+  Add Collection" name="submit" type="submit" id="add-collection" class="w-full hover:text-white hover:bg-indigo-700 rounded py-2 flex mb-4 justify-center"></div>
+            </form>
+        
+        </div>
+        <div id="main" class="w-3/5 flex flex-col items-center">
+
+            <div id="storyboard-title" class="text-indigo-700">storyboard</div>
+            <div id="collection-intro" class="h-auto w-full flex flex-col my-4">
+                <span id="collection-intro-name" class="text-2xl text-black text-center"></span>
+                <span id="collection-intro-description" class="text-sm text-gray-500 h-auto text-center"></span>
+            </div>
+            <form class="create-story-form flex flex-col justify-center items-center p-6 mt-8 mb-24 w-2/3 border border-black border-solid hover:bg-gray-200">
+
+                <textarea class="story-content-input h-full w-full border border-black border-solid mb-4 p-2" placeholder="Write your story here.  You have a maximum of three sentences.  Don't cheat, remember the honor system!" rows="5"></textarea>
+                <div class="mood-values-container flex flex-row mb-4 justify-around w-full">
+                    <div class="story-mood-container flex flex-col">
+                        <span class="story-mood mb-2">What is this Story's Mood?</span>
+                        <select class="mood-select bg-white px-2 py-4 border border-black border-solid">
+                            <option>Angry</option>
+                            <option>Hungry</option>
+                            <option>Happy</option>
+                            <option>Ambitious</option>
+                            <option>Brooding</option>
+                            <option>Sad</option>
+                            <option>Playful</option>
+                            <option>Stoic</option>
+                        </select>
+                    </div>
+                    <div class="how-moody-container flex flex-col">
+                        <span class="how-moody mb-2">How Moody?</span>
+                        <select class="mood-rating-select bg-white px-2 py-4 border border-black border-solid">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select>
+                    </div>
+                </div>
+                <input class="photo-url-input w-full mb-4 p-2 border border-black border-solid" placeholder="Enter a Photo URL (the photo is your story's prompt)" type="text">
+                <input value="Post Story" type="submit" class="submit-story px-2 py-2 text-center bg-indigo-700 rounded text-white">
+
+            </form>
+            <div id="storyboard" class="flex flex-col justify-center items-center">
+                
+                
+    
+            </div>
+
+        </div>
+        <div id="right-panel" class="w-1/5 bg-indigo-200 flex items-center p-6 justify-center">
+
+            <canvas id="doughnutChart" width="400" height="600" class="bg-white p-2"></canvas>
+        
+        </div>
+        <!-- END TEMPLATE -->
+
+    </body>
+
+</html>
