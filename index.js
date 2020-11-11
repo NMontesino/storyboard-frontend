@@ -1,8 +1,56 @@
-let image = document.querySelector(".collection-card-image")
+// Creating references to several crucial HTML Elements
+// 
+// let image = document.querySelector(".collection-card-image")
 const collectionsList = document.querySelector("#collections-list")
 const storyboard = document.querySelector("#storyboard")
 let globalCollectionID = 0
 const createStoryForm = document.querySelector(".create-story-form")
+
+
+// Initializing Chart.js Doughnut Chart through HTML Canvas
+let canvas = document.getElementById('doughnutChart')
+let ctx = canvas.getContext('2d')
+ctx.clearRect(0, 0, canvas.width, canvas.height)
+const defaultChartData = [0, 0, 0, 0, 0, 0, 0, 0]
+const doughnutChart = new Chart(ctx, 
+{
+    type: 'doughnut',
+    data: 
+    {
+        labels: ['Angry', 'Hungry', 'Happy', 'Ambitious', 'Brooding', 'Sad', 'Playful', 'Stoic'],
+        datasets: [
+        {
+            label: 'Moods',
+            data: [...defaultChartData],
+            backgroundColor: 
+            [
+                'rgba(220, 20, 60, 0.3)',
+                'rgba(255, 127, 80, 0.3)',
+                'rgba(255, 228, 181, 0.3)',
+                'rgba(0, 250, 154, 0.3)',
+                'rgba(0, 255, 255, 0.3)',
+                'rgba(100, 149, 237, 0.3)',
+                'rgba(138, 43, 226, 0.3)',
+                'rgba(255, 105, 180, 0.3)'
+            ],
+            borderColor: 
+            [
+                'rgba(220, 20, 60, 1)',
+                'rgba(255, 127, 80, 1)',
+                'rgba(255, 228, 181, 1)',
+                'rgba(0, 250, 154, 1)',
+                'rgba(0, 255, 255, 1)',
+                'rgba(100, 149, 237, 1)',
+                'rgba(138, 43, 226, 1)',
+                'rgba(255, 105, 180, 1)'
+            ],
+            borderWidth: 1
+        }]
+    }
+})
+
+
+// Logic for handling Story submissions
 createStoryForm.addEventListener("submit", (e) => 
 {
 
@@ -42,6 +90,7 @@ createStoryForm.addEventListener("submit", (e) =>
 
 })
 
+// Logic for retrieving all Stories from currently selected Collection
 function getCollectionStories(collection)
 {
 
@@ -67,48 +116,25 @@ function getCollectionStories(collection)
 
 function renderCollectionStory(story)
 {
-    debugger
+
     let content = story.content
     let mood = story.mood.toLowerCase()
     let moodRating = story.mood_rating
     let photoURL = story.photo_url
-    // let collectionID = story.collection_id
-    // let id = story.id
 
-    let color
+    const colorMap = 
+    {
+        angry: "red",
+        hungry: "orange",
+        happy: "yellow",
+        ambitious: "green",
+        brooding: "teal",
+        sad: "blue",
+        playful: "purple",
+        stoic: "pink"
+    }
 
-    if(mood === "angry")
-    {
-        color = "red"
-    }
-    else if(mood === "hungry")
-    {
-        color = "orange"
-    }
-    else if(mood === "happy")
-    {
-        color = "yellow"
-    }
-    else if(mood === "ambitious")
-    {
-        color = "green"
-    }
-    else if(mood === "brooding")
-    {
-        color = "teal"
-    }
-    else if(mood === "sad")
-    {
-        color = "blue"
-    }
-    else if(mood === "playful")
-    {
-        color = "purple"
-    }
-    else if(mood === "stoic")
-    {
-        color = "pink"
-    }
+    let color = colorMap[mood]
 
     let collectionCard = document.createElement("div")
     collectionCard.className = `collection-card hover:bg-${color}-${moodRating}00`
@@ -119,7 +145,6 @@ function renderCollectionStory(story)
     collectionCardImage.className ="collection-card-image"
     collectionCardImage.style.backgroundImage = `url(${photoURL})`
     collectionCardImageContainer.append(collectionCardImage)
-    // debugger
     
     let divider = document.createElement("hr")
     divider.className = "divider"
@@ -167,7 +192,6 @@ function renderCollectionStory(story)
         .then(res => res.json())
         .then((newStory) => 
         {
-            // debugger
             collectionCardBody.innerText = newStory.content
             content = newStory.content
         })
@@ -191,22 +215,31 @@ function renderCollection(collection)
     let collectionDiv = document.createElement("div")
     collectionDiv.innerText = name
     collectionDiv.className = "h-1/4 w-full hover:text-white hover:bg-indigo-700 py-1 text-center"
-    collectionDiv.addEventListener("click", () => 
+    let collectionDelete = document.createElement("span")
+    collectionDelete.innerText = " x "
+
+    collectionDiv.addEventListener("click", (e) => 
     {
         collectionIntroName.innerText = collection.name
         collectionIntroDescription.innerText = collection.description
         getCollectionStories(collection)
         globalCollectionID = id
-        getCollectionMoods()
+        if (e.target !== collectionDelete)
+        {
+            getCollectionMoods()
+        }
     })
 
-    let collectionDelete = document.createElement("span")
-    collectionDelete.innerText = " x "
     collectionDelete.addEventListener("click", () => 
     {
+
         let ans = confirm("Are you sure you want to delete this collection?")
+
         if(ans)
         {
+
+            updateChart([...defaultChartData])
+
             fetch(`http://localhost:3000/collections/${id}`, 
             {
                 method: "DELETE"
@@ -221,7 +254,9 @@ function renderCollection(collection)
                     storyboard.innerHTML = null
                 }
             })
+
         }
+
     })
     collectionDiv.append(collectionDelete)
 
@@ -247,6 +282,18 @@ function getAllCollections()
 function getCollectionMoods()
 {
 
+    let moodCounts = 
+    {
+        angry: 0,
+        hungry: 0,
+        happy: 0,
+        ambitious: 0,
+        brooding: 0,
+        sad: 0,
+        playful: 0,
+        stoic: 0
+    }
+
     fetch('http://localhost:3000/stories', 
     {
         method: "GET"
@@ -255,101 +302,28 @@ function getCollectionMoods()
     .then((stories) => 
     {
 
-        let angryCount = 0
-        let hungryCount = 0 
-        let happyCount = 0
-        let ambitiousCount = 0
-        let broodingCount = 0
-        let sadCount = 0
-        let playfulCount = 0
-        let stoicCount = 0
-        // debugger
         stories.forEach((story) => 
         {
-            // debugger
 
             if(story.collection_id === globalCollectionID)
             {
-                if(story.mood === "Angry")
-                {
-                    // debugger
-                    angryCount += 1
-                }
-                else if(story.mood === "Hungry")
-                {
-                    hungryCount += 1
-                }
-                else if(story.mood === "Happy")
-                {
-                    happyCount += 1
-                }
-                else if(story.mood === "Ambitious")
-                {
-                    ambitiousCount += 1
-                }
-                else if(story.mood === "Brooding")
-                {
-                    broodingCount += 1
-                }
-                else if(story.mood === "Sad")
-                {
-                    sadCount += 1
-                }
-                else if(story.mood === "Playful")
-                {
-                    playfulCount += 1
-                }
-                else if(story.mood === "stoic")
-                {
-                    stoicCount += 1
-                }
+                moodCounts[story.mood.toLowerCase()] += 1
             }
-            // debugger
-            let canvas = document.getElementById('doughnutChart')
-            var ctx = canvas.getContext('2d')
-            ctx.clearRect(0, 0, canvas.width, canvas.height)
-            var doughnutChart = new Chart(ctx, 
-            {
-                type: 'doughnut',
-                data: 
-                {
-                    labels: ['Angry', 'Hungry', 'Happy', 'Ambitious', 'Brooding', 'Sad', 'Playful', 'Stoic'],
-                    datasets: [
-                    {
-                        label: 'Moods',
-                        data: [angryCount, hungryCount, happyCount, ambitiousCount, broodingCount,
-                            sadCount, playfulCount, stoicCount],
-                        backgroundColor: 
-                        [
-                            'rgba(220, 20, 60, 0.3)',
-                            'rgba(255, 127, 80, 0.3)',
-                            'rgba(255, 228, 181, 0.3)',
-                            'rgba(0, 250, 154, 0.3)',
-                            'rgba(0, 255, 255, 0.3)',
-                            'rgba(100, 149, 237, 0.3)',
-                            'rgba(138, 43, 226, 0.3)',
-                            'rgba(255, 105, 180, 0.3)'
-                        ],
-                        borderColor: 
-                        [
-                            'rgba(220, 20, 60, 1)',
-                            'rgba(255, 127, 80, 1)',
-                            'rgba(255, 228, 181, 1)',
-                            'rgba(0, 250, 154, 1)',
-                            'rgba(0, 255, 255, 1)',
-                            'rgba(100, 149, 237, 1)',
-                            'rgba(138, 43, 226, 1)',
-                            'rgba(255, 105, 180, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                }
-            })
 
         })
 
+        let {angry, hungry, happy, ambitious, brooding, sad, playful, stoic} = moodCounts
+        let newChartData = [angry, hungry, happy, ambitious, brooding, sad, playful, stoic]
+        updateChart(newChartData)
+
     })
 
+}
+
+function updateChart(newData)
+{
+    doughnutChart.data.datasets[0].data.splice(0, 8, ...newData)
+    doughnutChart.update()
 }
 
 window.addEventListener("DOMContentLoaded", () => 
