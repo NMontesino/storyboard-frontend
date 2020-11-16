@@ -1,17 +1,24 @@
 // Creating references to several crucial HTML Elements
-// 
-// let image = document.querySelector(".collection-card-image")
-const collectionsList = document.querySelector("#collections-list")
-const storyboard = document.querySelector("#storyboard")
-let globalCollectionID = 0
-const createStoryForm = document.querySelector(".create-story-form")
+const collectionsList = document.querySelector("#collections-list")         // Container of collections where they can be selected and deleted
+const storyboard = document.querySelector("#storyboard")                    // Container for storing created stories from the selected collection
+const createStoryForm = document.querySelector(".create-story-form")        // Form for entering necessary data to create stories
+const searchByMoodForm = document.querySelector("#search-by-mood")          // Form for filtering rendered stories by mood
+const moodSelect = document.querySelector('#mood-select')                   // Mood Select Element
 
+// Initializing Global ID to track currently selected collection
+let globalCollectionID = 0
+
+// Make global stories array to manage state of rendered stories from the selected collection
+let currentCollectionStories = []
+
+// Default Data for Chart.js Chart
+// (Used to render empty chart when there isn't a populated collection selected)
+const defaultChartData = [0, 0, 0, 0, 0, 0, 0, 0]
 
 // Initializing Chart.js Doughnut Chart through HTML Canvas
 let canvas = document.getElementById('doughnutChart')
 let ctx = canvas.getContext('2d')
 ctx.clearRect(0, 0, canvas.width, canvas.height)
-const defaultChartData = [0, 0, 0, 0, 0, 0, 0, 0]
 const doughnutChart = new Chart(ctx, 
 {
     type: 'doughnut',
@@ -53,15 +60,19 @@ const doughnutChart = new Chart(ctx,
 // Logic for handling Story submissions
 createStoryForm.addEventListener("submit", (e) => 
 {
-
+    // Prevent Form Submission Refresh Behavior
     e.preventDefault()
 
+    // Capture story submission form values for POST request
     let storyContent = document.querySelector(".story-content-input").value
     let mood = document.querySelector(".mood-select").value
     let moodRating = document.querySelector(".mood-rating-select").value
     let photoURL = document.querySelector(".photo-url-input").value
+
+    // Capture id from currently selected collection for database association
     let collectionID = globalCollectionID
 
+    // POST story to database
     fetch('http://localhost:3000/stories', 
     {
 
@@ -84,30 +95,59 @@ createStoryForm.addEventListener("submit", (e) =>
     .then(res => res.json())
     .then((story) => 
     {
+        // Render newly added story to the current collection story list
         renderCollectionStory(story)
+        // Update chart data with newly added mood
         getCollectionMoods()
     })
 
 })
 
+searchByMoodForm.addEventListener('submit', (e) => 
+{
+
+    e.preventDefault()
+
+    storyboard.innerHTML = null
+    filterByMood(moodSelect.value).forEach((story) => 
+    {
+        renderCollectionStory(story)
+    })
+
+})
+
+function filterByMood(mood)
+{
+
+    let filteredStories = mood === 'all' ? [...currentCollectionStories] : currentCollectionStories.filter((story) => story.mood.toUpperCase() === mood.toUpperCase() ? story : null)
+
+    return filteredStories
+
+}
+
 // Logic for retrieving all Stories from currently selected Collection
 function getCollectionStories(collection)
 {
 
+    // GET stories from db
     fetch("http://localhost:3000/stories")
     .then(res => res.json())
     .then((stories) => 
     {
+
+        // POTENTIAL REFACTOR HERE
+        // Maybe render the last story without rerendering all stories in a given collection
         
+        // Clear storyboard container
         storyboard.innerHTML = null
+        // Repopulate with new list of collection stories
         stories.forEach((story) => 
         {
-
             if(story.collection_id === collection.id)
             {
                 renderCollectionStory(story)
+                currentCollectionStories.push(story)
             }
-            
         })
 
     })
@@ -117,11 +157,13 @@ function getCollectionStories(collection)
 function renderCollectionStory(story)
 {
 
+    // Capture data from a given story object
     let content = story.content
     let mood = story.mood.toLowerCase()
     let moodRating = story.mood_rating
     let photoURL = story.photo_url
 
+    // Moods with their corresponding colors
     const colorMap = 
     {
         angry: "red",
@@ -134,20 +176,28 @@ function renderCollectionStory(story)
         stoic: "pink"
     }
 
+    // Pick color based on Story Object Mood
     let color = colorMap[mood]
 
+    // Create Story Card
     let collectionCard = document.createElement("div")
     collectionCard.className = `collection-card hover:bg-${color}-${moodRating}00`
 
+    // Create Image Container
     let collectionCardImageContainer = document.createElement("div")
     collectionCardImageContainer.className = "collection-card-image-container"
+
+    // Create Div for rendering image
     let collectionCardImage = document.createElement("div")
     collectionCardImage.className ="collection-card-image"
+    // Set Background Image and append to Container
     collectionCardImage.style.backgroundImage = `url(${photoURL})`
     collectionCardImageContainer.append(collectionCardImage)
     
+    // Create visual content divider
     let divider = document.createElement("hr")
     divider.className = "divider"
+
 
     let extrasContainer = document.createElement("div")
     extrasContainer.className = "extras-container flex flex-row justify-around"
@@ -158,9 +208,7 @@ function renderCollectionStory(story)
     let moodRatingSpan = document.createElement("span")
     moodRatingSpan.innerText = moodRating
     moodDiv.append(moodSpan, " - ", moodRatingSpan)
-    // let deleteDiv = document.createElement("div")
-    // deleteDiv.className = "delete-div p-2 bg-indigo-700 rounded text-white"
-    // deleteDiv.innerText = "Delete"
+    
     let updateButton = document.createElement("button")
     updateButton.innerText ="Reverse"
     
@@ -175,8 +223,8 @@ function renderCollectionStory(story)
 
     updateButton.addEventListener("click", () => 
     {
-
-        fetch(`http:localhost:3000/stories/${story.id}`, 
+        console.log(story)
+        fetch(`http://localhost:3000/stories/${story.id}`, 
         {
             method: "PATCH",
             headers: 
@@ -192,6 +240,7 @@ function renderCollectionStory(story)
         .then(res => res.json())
         .then((newStory) => 
         {
+            debugger
             collectionCardBody.innerText = newStory.content
             content = newStory.content
         })
@@ -218,19 +267,16 @@ function renderCollection(collection)
     let collectionDelete = document.createElement("span")
     collectionDelete.innerText = " x "
 
-    collectionDiv.addEventListener("click", (e) => 
+    collectionDiv.addEventListener("click", () => 
     {
         collectionIntroName.innerText = collection.name
         collectionIntroDescription.innerText = collection.description
         getCollectionStories(collection)
         globalCollectionID = id
-        if (e.target !== collectionDelete)
-        {
-            getCollectionMoods()
-        }
+        getCollectionMoods()
     })
 
-    collectionDelete.addEventListener("click", () => 
+    collectionDelete.addEventListener("click", (e) => 
     {
 
         let ans = confirm("Are you sure you want to delete this collection?")
@@ -244,22 +290,23 @@ function renderCollection(collection)
             {
                 method: "DELETE"
             })
-            .then(() => 
+
+            collectionDiv.remove()
+            collectionIntroName.innerText = null
+            collectionIntroDescription.innerText = null
+            if(globalCollectionID === id)
             {
-                collectionDiv.remove()
-                collectionIntroName.innerText = null
-                collectionIntroDescription.innerText = null
-                if(globalCollectionID === id)
-                {
-                    storyboard.innerHTML = null
-                }
-            })
+                storyboard.innerHTML = null
+            }
+            currentCollectionStories = []
 
         }
 
-    })
-    collectionDiv.append(collectionDelete)
+        e.stopPropagation()
 
+    })
+
+    collectionDiv.append(collectionDelete)
     collectionsList.append(collectionDiv)
 
 }

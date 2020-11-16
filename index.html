@@ -21,7 +21,7 @@
 
     </head>
 
-    <body class="flex flex-row">
+    <body class="flex flex-row flex-wrap">
 
         <!-- START TEMPLATE -->
 
@@ -87,8 +87,27 @@
             </div>
 
         </div>
-        <div id="right-panel" class="w-1/5 bg-indigo-200 flex items-center p-6 justify-center">
+        <div id="right-panel" class="flex-col w-1/5 bg-indigo-200 flex items-center p-6 justify-center">
 
+            <form id="search-by-mood">
+
+                <!-- <label for="mood-select"></label> -->
+                <select name="mood" id="mood-select">
+                    <option value="all">All Moods</option>
+                    <option value="angry">Angry</option>
+                    <option value="hungry">Hungry</option>
+                    <option value="happy">Happy</option>
+                    <option value="ambitious">Ambitious</option>
+                    <option value="brooding">Brooding</option>
+                    <option value="sad">Sad</option>
+                    <option value="playful">Playful</option>
+                    <option value="stoic">Stoic</option>
+                </select>
+
+                <button>Search</button>
+
+            </form>
+            <h3>Collection Moods Breakdown</h3>
             <canvas id="doughnutChart" width="400" height="600" class="bg-white p-2"></canvas>
         
         </div>
